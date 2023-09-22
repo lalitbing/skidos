@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  .screenHeight {
+    height: calc(100svh - 82px);
+  }
+}
