@@ -11,7 +11,7 @@ interface CardProps {
   promotion?: boolean;
   feed: any;
   setFeed: Function;
-  index: number;
+  index: string;
 }
 
 function Card(props: CardProps) {
@@ -28,15 +28,11 @@ function Card(props: CardProps) {
     index,
     feed,
   } = props;
-
   // Initialize state to track the new comment
   const [newComment, setNewComment] = useState("");
 
   return (
-    <div
-      className="p-5 border border-[#E0E5ED] bg-white rounded-md"
-      id={`card-${index}`}
-    >
+    <div className="p-5 border border-[#E0E5ED] bg-white rounded-md" id={index}>
       <p className="text-[#909CB1] text-sm mb-2.5">
         {date || "28/02/2022, 08:34:56 PM"}
       </p>
@@ -84,21 +80,16 @@ function Card(props: CardProps) {
         <button
           className="absolute top-2 right-4"
           onClick={() => {
-            console.log(newComment);
-            console.log(comments);
-
             if (newComment.trim() !== "") {
               // Update the feed with a new comment
               let feedData = feed.map((item: any) => {
-                if (item.id === `card-${index}`)
+                if (item.id === index)
                   return {
                     comments: item.comments.unshift({ body: newComment }), // Add new comment
                     ...item,
                   };
                 return item;
               });
-              console.log(feedData);
-
               // Update the feed state with the updated data
               setFeed(feedData);
             }
@@ -113,7 +104,7 @@ function Card(props: CardProps) {
           ? comments.map((item: any) => {
               return (
                 <div
-                  id={`card-${index}`}
+                  id={index}
                   key={Math.random()}
                   className="p-2.5 text-gray-500"
                 >

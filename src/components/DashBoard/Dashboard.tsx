@@ -67,10 +67,22 @@ function Dashboard() {
 
   // Function to filter the current feed based on selected tags
   const returnCurrentFeed = useCallback(() => {
-    if (feedtag === "Announcements")
-      return feed.filter((item: any) => item.announcement);
-    if (feedtag === "Promotions")
-      return feed.filter((item: any) => item.promotion);
+    if (feedtag === "Announcements") {
+      let filteredFeed = feed.filter((item: any) => item.announcement);
+      let newFeed = filteredFeed.map((item: any, index: number) => ({
+        id: `card-${index + 2}`,
+        ...item,
+      }));
+      return newFeed;
+    }
+    if (feedtag === "Promotions") {
+      let filteredFeed = feed.filter((item: any) => item.promotion);
+      let newFeed = filteredFeed.map((item: any, index: number) => ({
+        id: `card-${index + 2}`,
+        ...item,
+      }));
+      return newFeed;
+    }
     return feed;
   }, [feed, feedtag]);
 
@@ -122,10 +134,10 @@ function Dashboard() {
           ) : feed.length === 0 ? (
             <div>Something went Wrong</div>
           ) : (
-            returnCurrentFeed().map((item: any, index: number) => {
+            returnCurrentFeed().map((item: any) => {
               return (
                 <Card
-                  index={index}
+                  index={item.id}
                   key={Math.random()}
                   title={item.title}
                   description={item.body}

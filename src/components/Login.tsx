@@ -27,8 +27,6 @@ function Login() {
         userCred.email.trim(),
         userCred.password.trim()
       );
-      console.log(response);
-
       // Check the response status
       if (response.status === 200) {
         // Store login status and user data in sessionStorage
