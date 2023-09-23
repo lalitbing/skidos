@@ -24,6 +24,22 @@ function Dashboard() {
     setNewAnnouncement((prev) => ({ ...prev, [name]: value }));
   };
 
+  function getCurrentFormattedDate(): string {
+    const currentDate = new Date();
+
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const year = String(currentDate.getFullYear());
+
+    const hours = String(currentDate.getHours()).padStart(2, "0");
+    const minutes = String(currentDate.getMinutes()).padStart(2, "0");
+    const seconds = String(currentDate.getSeconds()).padStart(2, "0");
+
+    const ampm = currentDate.getHours() >= 12 ? "PM" : "AM";
+
+    return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds} ${ampm}`;
+  }
+
   // Fetch data from an API on component mount
   useEffect(() => {
     axios
@@ -38,6 +54,7 @@ function Dashboard() {
             promotion: index % 2 !== 0,
             author: authors[Math.floor(Math.random() * authors.length)],
             comments: [],
+            date: getCurrentFormattedDate(),
           };
         });
         setFeed(newFeed);
@@ -112,13 +129,13 @@ function Dashboard() {
                   key={Math.random()}
                   title={item.title}
                   description={item.body}
-                  date={""}
                   author={item.author}
                   comments={item.comments}
                   announcement={item.announcement}
                   promotion={item.promotion}
                   feed={feed}
                   setFeed={setFeed}
+                  date={item.date}
                 />
               );
             })
@@ -135,7 +152,10 @@ function Dashboard() {
                 category === "Promotions" || category === "Announcements";
               if (noEmptyField && rightCategory) {
                 let feedData = feed.map((item: any, index: number) => {
-                  return { id: `card-${index + 2}`, ...item };
+                  return {
+                    id: `card-${index + 2}`,
+                    ...item,
+                  };
                 });
                 feedData.unshift({
                   id: `card-0`,
@@ -143,10 +163,15 @@ function Dashboard() {
                   body: description,
                   announcement: category === "Announcements",
                   promotion: category === "Promotions",
+                  date: getCurrentFormattedDate(),
                   comments: [],
                 });
-                console.log(feedData);
                 setFeed(feedData);
+                setNewAnnouncement({
+                  title: "",
+                  description: "",
+                  category: "",
+                });
               } else
                 alert(
                   "Please check category it should only be Promotions or Announcements"
