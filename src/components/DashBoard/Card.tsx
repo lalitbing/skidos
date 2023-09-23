@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+// Define the props interface for the Card component
 interface CardProps {
   date: string;
   title: string;
@@ -12,7 +13,9 @@ interface CardProps {
   setFeed: Function;
   index: number;
 }
+
 function Card(props: CardProps) {
+  // Destructure props to access individual properties
   const {
     date,
     title,
@@ -26,6 +29,7 @@ function Card(props: CardProps) {
     feed,
   } = props;
 
+  // Initialize state to track the new comment
   const [newComment, setNewComment] = useState("");
 
   return (
@@ -43,6 +47,7 @@ function Card(props: CardProps) {
             announcement ? "bg-[#F8E7DD]" : promotion ? "bg-[#EAE9EE]" : ""
           }  `}
         >
+          {/* Render icon and text based on announcement or promotion */}
           {announcement ? (
             <i className="fa fa-bell text-sm text-[#D06700]"></i>
           ) : promotion ? (
@@ -83,16 +88,18 @@ function Card(props: CardProps) {
             console.log(comments);
 
             if (newComment.trim() !== "") {
+              // Update the feed with a new comment
               let feedData = feed.map((item: any) => {
                 if (item.id === `card-${index}`)
                   return {
-                    comments: item.comments.unshift({ body: newComment }),
+                    comments: item.comments.unshift({ body: newComment }), // Add new comment
                     ...item,
                   };
                 return item;
               });
               console.log(feedData);
 
+              // Update the feed state with the updated data
               setFeed(feedData);
             }
           }}

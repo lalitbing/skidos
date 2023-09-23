@@ -5,7 +5,10 @@ import axios from "axios";
 import FilterTag from "../../helper_components/FilterTag";
 
 function Dashboard() {
+  // Define a list of authors
   const authors = ["Skidos Team", "Lalit", "Virat", "Shumaker", "Max", "Togo"];
+
+  // Initialize state variables
   const [feed, setFeed] = useState<any>([]);
   const [isFetching, setIsFetching] = useState(true);
   const [feedtag, setFeedTag] = useState("All");
@@ -15,11 +18,13 @@ function Dashboard() {
     category: "",
   });
 
+  // Function to handle input changes for new announcements
   const onInputChange = (e: any) => {
     const { name, value } = e.target as HTMLInputElement;
     setNewAnnouncement((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Fetch data from an API on component mount
   useEffect(() => {
     axios
       .get("https://jsonplaceholder.typicode.com/posts")
@@ -30,7 +35,7 @@ function Dashboard() {
             ...item,
             id: `card-${index + 1}`,
             announcement: index % 2 === 0,
-            promotion: index % 2 != 0,
+            promotion: index % 2 !== 0,
             author: authors[Math.floor(Math.random() * authors.length)],
             comments: [],
           };
@@ -43,6 +48,7 @@ function Dashboard() {
       });
   }, []);
 
+  // Function to filter the current feed based on selected tags
   const returnCurrentFeed = useCallback(() => {
     if (feedtag === "Announcements")
       return feed.filter((item: any) => item.announcement);
@@ -124,7 +130,7 @@ function Dashboard() {
             onClick={() => {
               const { title, category, description } = newAnnouncement;
               const noEmptyField =
-                title != "" && description !== "" && category !== "";
+                title !== "" && description !== "" && category !== "";
               const rightCategory =
                 category === "Promotions" || category === "Announcements";
               if (noEmptyField && rightCategory) {
@@ -147,7 +153,7 @@ function Dashboard() {
                 );
             }}
           >
-            Submit An Announment
+            Submit An Announcement
           </button>
           <div>
             <FilterTag
