@@ -7,7 +7,6 @@ import FilterTag from "../../helper_components/FilterTag";
 function Dashboard() {
   const authors = ["Skidos Team", "Lalit", "Virat", "Shumaker", "Max", "Togo"];
   const [feed, setFeed] = useState<any>([]);
-  const [comments, setComments] = useState([]);
   const [isFetching, setIsFetching] = useState(true);
   const [feedtag, setFeedTag] = useState("All");
   const [newAnnouncement, setNewAnnouncement] = useState({
@@ -23,21 +22,17 @@ function Dashboard() {
 
   useEffect(() => {
     axios
-      .get("https://jsonplaceholder.typicode.com/posts/1/comments")
-      .then((data) => setComments(data.data));
-  }, []);
-
-  useEffect(() => {
-    axios
       .get("https://jsonplaceholder.typicode.com/posts")
       .then((data) => {
         let feedData = data.data;
         let newFeed = feedData.map((item: any, index: number) => {
           return {
             ...item,
+            id: `card-${index + 1}`,
             announcement: index % 2 === 0,
             promotion: index % 2 != 0,
             author: authors[Math.floor(Math.random() * authors.length)],
+            comments: [],
           };
         });
         setFeed(newFeed);
@@ -46,7 +41,7 @@ function Dashboard() {
       .catch(() => {
         setIsFetching(false);
       });
-  }, [comments]);
+  }, []);
 
   const returnCurrentFeed = useCallback(() => {
     if (feedtag === "Announcements")
@@ -104,18 +99,20 @@ function Dashboard() {
           ) : feed.length === 0 ? (
             <div>Something went Wrong</div>
           ) : (
-            returnCurrentFeed().map((item: any) => {
+            returnCurrentFeed().map((item: any, index: number) => {
               return (
                 <Card
+                  index={index}
                   key={Math.random()}
                   title={item.title}
                   description={item.body}
                   date={""}
                   author={item.author}
-                  comments={comments.length !== 0 ? comments : []}
+                  comments={item.comments}
                   announcement={item.announcement}
                   promotion={item.promotion}
-                  setComments={setComments}
+                  feed={feed}
+                  setFeed={setFeed}
                 />
               );
             })
@@ -126,21 +123,25 @@ function Dashboard() {
             className="rounded-md bg-[#3C88F7] px-3 text-white self-center mb-5"
             onClick={() => {
               const { title, category, description } = newAnnouncement;
-              if (
-                category === "All" ||
-                category === "Promotions" ||
-                category === "Announcements"
-              )
-                setFeed((prev: any) => [
-                  {
-                    title,
-                    body: description,
-                    announcement: category === "Announcements",
-                    promotion: category === "Promotions",
-                  },
-                  ...prev,
-                ]);
-              else
+              const noEmptyField =
+                title != "" && description !== "" && category !== "";
+              const rightCategory =
+                category === "Promotions" || category === "Announcements";
+              if (noEmptyField && rightCategory) {
+                let feedData = feed.map((item: any, index: number) => {
+                  return { id: `card-${index + 2}`, ...item };
+                });
+                feedData.unshift({
+                  id: `card-0`,
+                  title,
+                  body: description,
+                  announcement: category === "Announcements",
+                  promotion: category === "Promotions",
+                  comments: [],
+                });
+                console.log(feedData);
+                setFeed(feedData);
+              } else
                 alert(
                   "Please check category it should only be Promotions or Announcements"
                 );

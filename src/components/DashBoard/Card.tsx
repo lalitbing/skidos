@@ -8,7 +8,9 @@ interface CardProps {
   comments: any;
   announcement?: boolean;
   promotion?: boolean;
-  setComments: Function;
+  feed: any;
+  setFeed: Function;
+  index: number;
 }
 function Card(props: CardProps) {
   const {
@@ -19,13 +21,18 @@ function Card(props: CardProps) {
     announcement,
     promotion,
     comments,
-    setComments,
+    setFeed,
+    index,
+    feed,
   } = props;
 
   const [newComment, setNewComment] = useState("");
 
   return (
-    <div className="p-5 border border-[#E0E5ED] bg-white rounded-md">
+    <div
+      className="p-5 border border-[#E0E5ED] bg-white rounded-md"
+      id={`card-${index}`}
+    >
       <p className="text-[#909CB1] text-sm mb-2.5">
         {date || "28/02/2022, 08:34:56 PM"}
       </p>
@@ -72,8 +79,22 @@ function Card(props: CardProps) {
         <button
           className="absolute top-2 right-4"
           onClick={() => {
-            if (newComment.trim() !== "")
-              setComments((prev: any) => [{ body: newComment }, ...prev]);
+            console.log(newComment);
+            console.log(comments);
+
+            if (newComment.trim() !== "") {
+              let feedData = feed.map((item: any) => {
+                if (item.id === `card-${index}`)
+                  return {
+                    comments: item.comments.unshift({ body: newComment }),
+                    ...item,
+                  };
+                return item;
+              });
+              console.log(feedData);
+
+              setFeed(feedData);
+            }
           }}
         >
           <i className="fa fa-paper-plane"></i>
@@ -84,7 +105,11 @@ function Card(props: CardProps) {
         {comments.length !== 0
           ? comments.map((item: any) => {
               return (
-                <div key={Math.random()} className="p-2.5 text-gray-500">
+                <div
+                  id={`card-${index}`}
+                  key={Math.random()}
+                  className="p-2.5 text-gray-500"
+                >
                   <p>{item.body}</p>
                   <p className="mt-1 w-[75%] h-full border border-gray-300 "></p>
                 </div>
